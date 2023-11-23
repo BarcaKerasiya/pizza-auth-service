@@ -1,0 +1,11 @@
+{
+  "name": "pizza-auth-service",
+  "version": "1.0.0",
+  "description": "A user management service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Vishnu Kerasiya <vishnukerasiya@gmail.com>",
+  "license": "ISC"
+}
