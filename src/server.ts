@@ -1,10 +1,3 @@
-function login(username: string): string {
-  const user = {
-    name: "barca",
-  };
-  const name = user["name"];
+import { Config } from "./config";
 
-  return username + name;
-}
-
-login("Barca");
+console.log(Config.PORT);
