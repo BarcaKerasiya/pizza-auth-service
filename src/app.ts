@@ -2,7 +2,7 @@ import "reflect-metadata";
 import express, { NextFunction, Request, Response } from "express";
 import { logger } from "./config/logger";
 import { HttpError } from "http-errors";
-import authRouter from "./routes/app";
+import authRouter from "./routes/auth";
 
 const app = express();
 
