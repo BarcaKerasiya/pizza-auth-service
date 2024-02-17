@@ -3,13 +3,6 @@ import { DataSource } from "typeorm";
 import { User } from "../entities/User";
 import { Config } from ".";
 
-console.log(
-  Config.DB_HOST,
-  Config.DB_PORT,
-  Config.DB_USERNAME,
-  Config.DB_PASSWORD,
-  Config.DB_NAME,
-);
 export const AppDataSource = new DataSource({
   type: "postgres",
   host: Config.DB_HOST,
@@ -25,5 +18,3 @@ export const AppDataSource = new DataSource({
   migrations: [],
   subscribers: [],
 });
-
-// console.log("AppDataSource", AppDataSource);
