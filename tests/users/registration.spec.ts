@@ -60,7 +60,7 @@ describe("POST /auth/register", () => {
         password: "secret",
       };
       // Act
-      const response = await request(app).post("/auth/register").send(userData);
+      await request(app).post("/auth/register").send(userData);
 
       // Assert
       const userRepository = connection.getRepository(User);

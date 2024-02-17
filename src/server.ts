@@ -10,14 +10,14 @@ const startServer = () => {
       .then(() => {
         app.listen(PORT, () => {
           console.log("Database Connected....");
-          // logger.info(`Listening on port ${PORT}`);
+          logger.info(`Listening on port ${PORT}`);
         });
       })
       .catch((error) => console.log("TypeORM connection error: ", error));
   } catch (error: unknown) {
     console.log("catch");
     if (error instanceof Error) {
-      // logger.error(error.message);
+      logger.error(error.message);
       setTimeout(() => {
         process.exit(1);
       }, 1000);
