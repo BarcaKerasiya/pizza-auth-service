@@ -2,8 +2,8 @@ import request from "supertest";
 import app from "../../src/app";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
-import { truncateTables } from "../utils";
 import { User } from "../../src/entities/User";
+import { Roles } from "../../src/constants";
 
 describe("POST /auth/register", () => {
   let connection: DataSource;
@@ -13,7 +13,9 @@ describe("POST /auth/register", () => {
   });
   beforeEach(async () => {
     // turncate tables || clear tables data
-    await truncateTables(connection);
+    await connection.dropDatabase();
+    await connection.synchronize();
+    // await truncateTables(connection);
   });
   afterAll(async () => {
     if (connection.isInitialized) {
@@ -69,6 +71,24 @@ describe("POST /auth/register", () => {
       expect(user[0].firstName).toBe(userData.firstName);
       expect(user[0].lastName).toBe(userData.lastName);
       expect(user[0].email).toBe(userData.email);
+    });
+    it("Shuold return an id of created user ", () => {});
+    it("Should assign a customer role", async () => {
+      // Arrange
+      const userData = {
+        firstName: "Barca",
+        lastName: "Kerasiya",
+        email: "barca@gmail.com",
+        password: "secret",
+      };
+      // Act
+      await request(app).post("/auth/register").send(userData);
+
+      // Assert
+      const userRepository = connection.getRepository(User);
+      const user = await userRepository.find();
+      expect(user[0]).toHaveProperty("role");
+      expect(user[0].role).toBe(Roles.CUSTOMER);
     });
   });
   describe("Fields are missing", () => {});
