@@ -104,7 +104,6 @@ describe("POST /auth/register", () => {
       // Assert
       const userRepository = connection.getRepository(User);
       const user = await userRepository.find();
-      console.log(user[0].password);
       expect(user[0].password).not.toBe(userData.password);
       expect(user[0].password).toHaveLength(60);
       expect(user[0].password).toMatch(/^\$2b\$\d+\$/);
@@ -127,6 +126,40 @@ describe("POST /auth/register", () => {
       expect(response.statusCode).toBe(400);
       expect(users).toHaveLength(1);
     });
+    it("Should return the eaccess token and refresh token", async () => {
+      // Arrange
+      const userData = {
+        firstName: "Barca",
+        lastName: "Kerasiya",
+        email: "barca@gmail.com",
+        password: "secret",
+      };
+
+      // Act
+      const response = await request(app).post("/auth/register").send(userData);
+
+      interface Headers {
+        ["set-cookie"]: string[];
+      }
+      // Assert
+      let accessToken = null;
+      let refreshToken = null;
+      const cookies =
+        (response.headers as unknown as Headers)["set-cookie"] || [];
+      cookies.forEach((cookie) => {
+        if (cookie.startsWith("accessToken=")) {
+          accessToken = cookie.split(";")[0].split("=")[1];
+        }
+        if (cookie.startsWith("refreshToken=")) {
+          refreshToken = cookie.split(";")[0].split("=")[1];
+        }
+      });
+      expect(accessToken).not.toBeNull();
+      expect(refreshToken).not.toBeNull();
+
+      expect(isJWT(accessToken)).toBeTruthy();
+      expect(isJWT(refreshToken)).toBeTruthy();
+    });
   });
   describe("Fields are missing", () => {
     it("Should return 400 status code if email filed is missing", async () => {
@@ -140,9 +173,60 @@ describe("POST /auth/register", () => {
 
       // Act
       const response = await request(app).post("/auth/register").send(userData);
-      console.log("response", response.body);
       // Assert
+      const userRepository = connection.getRepository(User);
+      const user = await userRepository.find();
       expect(response.statusCode).toBe(400);
+      expect(user).toHaveLength(0);
     });
+    it.todo("Should return 400 status code if firstName is missing");
+    it.todo("Should return 400 status code if lastName is missing");
+    it.todo("Should return 400 status code if password is missing");
+  });
+
+  describe("Fileds are not in proper format", () => {
+    it("Should trim email field", async () => {
+      // Arrange
+      const userData = {
+        firstName: "Barca",
+        lastName: "Kerasiya",
+        email: " barca@gmail.com ",
+        password: "secret",
+      };
+
+      // Act
+      await request(app).post("/auth/register").send(userData);
+
+      // Assert
+      const userRepository = connection.getRepository(User);
+      const user = await userRepository.find();
+      expect(user[0].email).toBe("barca@gmail.com");
+    });
+
+    it.todo("should return 400 status code if email is not valid");
+    it.todo(
+      "should return 400 status code if password length is less than 8 char",
+    );
+    it.todo("should return an array of error messages if email is missing");
   });
 });
+
+const isJWT = (token: string | null): boolean => {
+  console.log("token", token);
+  if (token === null) {
+    return false;
+  }
+  const parts = token.split(".");
+
+  if (parts.length !== 3) {
+    return false;
+  }
+  try {
+    parts.forEach((part) => {
+      Buffer.from(part, "base64").toString("utf-8");
+    });
+    return true;
+  } catch (error) {
+    return false;
+  }
+};

@@ -26,7 +26,7 @@ export class UserService {
       });
     } catch (error) {
       const err = createHttpError(500, "Failed to store the data in database");
-      throw error;
+      throw err;
     }
   }
 }

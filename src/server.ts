@@ -15,7 +15,6 @@ const startServer = () => {
       })
       .catch((error) => console.log("TypeORM connection error: ", error));
   } catch (error: unknown) {
-    console.log("catch");
     if (error instanceof Error) {
       logger.error(error.message);
       setTimeout(() => {
