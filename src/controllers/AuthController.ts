@@ -1,18 +1,16 @@
-import fs from "fs";
-import path from "path";
 import { NextFunction, Response } from "express";
 import { RegisterUserRequest } from "../types";
 import { UserService } from "../services/AuthService";
 import { Logger } from "winston";
-import createHttpError from "http-errors";
 import { validationResult } from "express-validator";
-import { JwtPayload, sign } from "jsonwebtoken";
-import { Config } from "../config";
+import { JwtPayload } from "jsonwebtoken";
+import { TokenService } from "../services/TokenService";
 
 export class Authcontroller {
   constructor(
     private userService: UserService,
     private logger: Logger,
+    private tokenService: TokenService,
   ) {}
   async register(req: RegisterUserRequest, res: Response, next: NextFunction) {
     const result = validationResult(req);
@@ -37,33 +35,20 @@ export class Authcontroller {
       });
 
       this.logger.info("User has been created", { id: user.id });
-      let privateKey: string;
-      try {
-        privateKey = fs
-          .readFileSync(path.join(__dirname, "../../certs/private.pem"))
-          .toString();
-      } catch (error) {
-        const err = createHttpError(500, "Error while reading private key");
-        next(err);
-        return;
-      }
+
       const payload: JwtPayload = {
         id: String(user.id),
         role: user.role,
       };
 
-      const accessToken = sign(payload, privateKey, {
-        algorithm: "RS256",
-        expiresIn: "1h",
-        issuer: "auth-service",
-      });
+      const accessToken = this.tokenService.generateAccesToken(payload);
+      // persist the refresh token
+      const newRefreshtoken = await this.tokenService.persistRefreshtoken(user);
 
-      const refreshToken = sign(payload, Config.REFRESH_TOKEN_SECRET_KEY!, {
-        algorithm: "HS256",
-        expiresIn: "1y",
-        issuer: "auth-service",
+      const refreshToken = this.tokenService.generateRefreshToken({
+        ...payload,
+        id: newRefreshtoken.id,
       });
-      console.log("refreshToken", refreshToken);
       res.cookie("accessToken", accessToken, {
         maxAge: 1000 * 60 * 60, // 1h
         sameSite: "strict",

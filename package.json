@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prepare": "husky install",
-    "test": "jest --watchAll --runInBand --detectOpenHandles",
+    "__test": "jest --watchAll --runInBand --detectOpenHandles",
+    "test": "jest --watchAll",
     "start": "ts-node src/index.ts",
     "typeorm": "typeorm-ts-node-commonjs"
   },

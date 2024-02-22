@@ -4,6 +4,7 @@ import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
 import { User } from "../../src/entities/User";
 import { Roles } from "../../src/constants";
+import { RefreshToken } from "../../src/entities/RefreshToken";
 
 describe("POST /auth/register", () => {
   let connection: DataSource;
@@ -126,7 +127,7 @@ describe("POST /auth/register", () => {
       expect(response.statusCode).toBe(400);
       expect(users).toHaveLength(1);
     });
-    it("Should return the eaccess token and refresh token", async () => {
+    it("Should return the access token and refresh token", async () => {
       // Arrange
       const userData = {
         firstName: "Barca",
@@ -156,9 +157,33 @@ describe("POST /auth/register", () => {
       });
       expect(accessToken).not.toBeNull();
       expect(refreshToken).not.toBeNull();
-
       expect(isJWT(accessToken)).toBeTruthy();
       expect(isJWT(refreshToken)).toBeTruthy();
+    });
+
+    it("Shoud store the refresh token in the database", async () => {
+      // Arrange
+      const userData = {
+        firstName: "Barca",
+        lastName: "Kerasiya",
+        email: "barca@gmail.com",
+        password: "secret",
+      };
+      // Act
+      const response = await request(app).post("/auth/register").send(userData);
+
+      // Assert
+      const refreshTokenRepo = connection.getRepository(RefreshToken);
+      // const refreshTokens = await refreshTokenRepo.find();
+      // expect(refreshTokens).toHaveLength(1);
+      const tokens = await refreshTokenRepo
+        .createQueryBuilder("refreshToken")
+        .where("refreshToken.userId = :userId", {
+          userId: (response.body as Record<string, string>).id,
+        })
+        .getMany();
+      console.log("tokens", tokens);
+      expect(tokens).toHaveLength(1);
     });
   });
   describe("Fields are missing", () => {
@@ -212,7 +237,6 @@ describe("POST /auth/register", () => {
 });
 
 const isJWT = (token: string | null): boolean => {
-  console.log("token", token);
   if (token === null) {
     return false;
   }
