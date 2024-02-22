@@ -8,8 +8,8 @@ const startServer = () => {
   try {
     AppDataSource.initialize()
       .then(() => {
+        logger.info("Database Connected....");
         app.listen(PORT, () => {
-          console.log("Database Connected....");
           logger.info(`Listening on port ${PORT}`);
         });
       })

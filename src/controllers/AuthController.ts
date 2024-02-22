@@ -67,4 +67,6 @@ export class Authcontroller {
       return;
     }
   }
+
+  // async login(req: Request, res: Response, next: NextFunction) {}
 }
