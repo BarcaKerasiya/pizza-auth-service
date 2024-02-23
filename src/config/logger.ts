@@ -4,8 +4,10 @@ const { format } = winston;
 
 export const logger = winston.createLogger({
   level: "info",
-  format: winston.format.json(),
+  // format: winston.format.json(),
   defaultMeta: { serviceName: "auth-service" },
+  format: format.combine(format.timestamp(), format.json()),
+
   transports: [
     new winston.transports.File({
       dirname: "logs",
@@ -21,7 +23,6 @@ export const logger = winston.createLogger({
     }),
     new winston.transports.Console({
       level: "info",
-      format: format.combine(format.timestamp(), format.json()),
       // silent: Config.NODE_ENV === "test",
     }),
   ],
