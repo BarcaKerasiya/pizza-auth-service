@@ -23,4 +23,4 @@ const startServer = () => {
     }
   }
 };
-startServer();
+void startServer();
