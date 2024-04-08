@@ -65,6 +65,32 @@ describe("GET /auth/self", () => {
       //
       expect((response.body as Record<string, string>).id).toBe(data.id);
     });
+    it("should not return password field", async () => {
+      // Register user
+      const userData = {
+        firstName: "Barca",
+        lastName: "Kerasiya",
+        email: "barca@gmail.com",
+        password: "secret",
+      };
+
+      const userRepository = connection.getRepository(User);
+      const data = await userRepository.save({
+        ...userData,
+        role: Roles.CUSTOMER,
+      });
+      // Generate token
+      const accessToken = jwks.token({ sub: String(data.id), role: data.role });
+      // Add token to cookies
+      const response = await request(app)
+        .get("/auth/self")
+        .set("Cookie", `accessToken=${accessToken};`)
+        .send();
+      //
+      expect(response.body as Record<string, string>).not.toHaveProperty(
+        "password",
+      );
+    });
   });
   describe("Fields are missing", () => {});
 });
