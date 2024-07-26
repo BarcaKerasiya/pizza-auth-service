@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthRequest, RegisterUserRequest } from "../types";
-import { UserService } from "../services/AuthService";
+import { UserService } from "../services/UserService";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
 import { JwtPayload } from "jsonwebtoken";
@@ -93,7 +93,7 @@ export class Authcontroller {
       }
 
       //compare password
-      const isPasswordMatch = this.credentialService.comparePassword(
+      const isPasswordMatch = await this.credentialService.comparePassword(
         password,
         user.password,
       );
@@ -139,7 +139,6 @@ export class Authcontroller {
   }
 
   async self(req: AuthRequest, res: Response) {
-    console.log(req.auth);
     const user = await this.userService.findById(Number(req.auth.sub));
     res.json({ ...user, password: undefined });
   }

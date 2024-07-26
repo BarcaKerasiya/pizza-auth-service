@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import { Authcontroller } from "../controllers/AuthController";
-import { UserService } from "../services/AuthService";
+import { UserService } from "../services/UserService";
 import { AppDataSource } from "../config/data-source";
 import { User } from "../entities/User";
 import { logger } from "../config/logger";

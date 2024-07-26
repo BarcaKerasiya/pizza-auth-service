@@ -91,6 +91,25 @@ describe("GET /auth/self", () => {
         "password",
       );
     });
+    it("should return 401 if token does not exists", async () => {
+      // Register user
+      const userData = {
+        firstName: "Barca",
+        lastName: "Kerasiya",
+        email: "barca@gmail.com",
+        password: "secret",
+      };
+
+      const userRepository = connection.getRepository(User);
+      await userRepository.save({
+        ...userData,
+        role: Roles.CUSTOMER,
+      });
+      // Add token to cookies
+      const response = await request(app).get("/auth/self").send();
+      //
+      expect(response.statusCode).toBe(401);
+    });
   });
   describe("Fields are missing", () => {});
 });

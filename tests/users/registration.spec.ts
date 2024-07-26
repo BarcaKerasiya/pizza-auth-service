@@ -182,7 +182,6 @@ describe("POST /auth/register", () => {
           userId: (response.body as Record<string, string>).id,
         })
         .getMany();
-      console.log("tokens", tokens);
       expect(tokens).toHaveLength(1);
     });
   });
