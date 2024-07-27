@@ -13,7 +13,9 @@
     "test": "jest --watchAll --runInBand --detectOpenHandles",
     "__test": "jest --watchAll",
     "start": "ts-node src/index.ts",
-    "typeorm": "typeorm-ts-node-commonjs"
+    "migration:generate": "cross-env NODE_ENV=dev typeorm-ts-node-commonjs migration:generate",
+    "migration:run": "cross-env NODE_ENV=dev typeorm-ts-node-commonjs migration:run",
+    "migration:create": "cross-env NODE_ENV=dev typeorm-ts-node-commonjs migration:create"
   },
   "author": "Vishnu Kerasiya <vishnukerasiya@gmail.com>",
   "license": "ISC",
