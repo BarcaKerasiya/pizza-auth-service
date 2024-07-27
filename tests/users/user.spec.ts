@@ -11,7 +11,7 @@ describe("GET /auth/self", () => {
   let jwks: ReturnType<typeof createJWKSMock>;
 
   beforeAll(async () => {
-    jwks = createJWKSMock("http://localhost:5501");
+    jwks = createJWKSMock("http://localhost:5555");
     connection = await AppDataSource.initialize();
   });
   beforeEach(async () => {
@@ -33,7 +33,8 @@ describe("GET /auth/self", () => {
   describe("Given all fields", () => {
     it("Should return 200 status code", async () => {
       // Generate token
-      const accessToken = jwks.token({ sub: "1", role: Roles.CUSTOMER });
+      const accessToken = jwks.token({ sub: "4", role: Roles.CUSTOMER });
+      console.log("accessToken", accessToken);
       const response = await request(app)
         .get("/auth/self")
         .set("Cookie", `accessToken=${accessToken};`)

@@ -5,5 +5,3 @@ const privateKey = fs.readFileSync("./certs/private.pem");
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
 const jwk = rsaPemToJwk(privateKey, { use: "sig" }, "public");
-
-console.log("jwk", JSON.stringify(jwk));

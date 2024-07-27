@@ -5,6 +5,7 @@ export interface Userdata {
   lastName: string;
   email: string;
   password: string;
+  role: string;
 }
 export interface RegisterUserRequest extends Request {
   body: Userdata;
@@ -14,6 +15,15 @@ export interface AuthRequest extends Request {
   auth: {
     sub: string;
     role: string;
-    id: string;
+    id?: string;
   };
+}
+
+export interface AuthCookies {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface IrefrshToeknPayload {
+  id: string;
 }
